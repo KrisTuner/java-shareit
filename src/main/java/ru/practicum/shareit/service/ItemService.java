@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.service;
 
 import ru.practicum.shareit.item.dto.ItemDto;
 import java.util.List;

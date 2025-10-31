@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.service.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
@@ -11,6 +12,8 @@ import java.util.List;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
+    public static final String USER_ID_HEADER = "X-Sharer-User-Id";
+
     private final UserService userService;
 
     @PostMapping

@@ -14,6 +14,8 @@ import java.util.Map;
 @RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 public class ItemRequestController {
+    public static final String USER_ID_HEADER = "X-Sharer-User-Id";
+
     private final Map<Long, ItemRequest> requests = new HashMap<>();
     private long idCounter = 1;
 
@@ -22,7 +24,7 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestDto createItemRequest(@RequestBody ItemRequestCreateDto itemRequestCreateDto,
-                                            @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                            @RequestHeader(USER_ID_HEADER) Long userId) {
         ItemRequest request = ItemRequestMapper.toItemRequest(itemRequestCreateDto, userId);
         request.setId(idCounter++);
         requests.put(request.getId(), request);
@@ -31,7 +33,7 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public List<ItemRequestDto> getUserRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemRequestDto> getUserRequests(@RequestHeader(USER_ID_HEADER) Long userId) {
         return requests.values().stream()
                 .filter(request -> request.getRequesterId().equals(userId))
                 .map(ItemRequestMapper::toItemRequestDto)
@@ -39,7 +41,7 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemRequestDto> getAllRequests(@RequestHeader(USER_ID_HEADER) Long userId,
                                                @RequestParam(defaultValue = DEFAULT_PAGE_START) int from,
                                                @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) int size) {
         return requests.values().stream()
@@ -50,7 +52,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     public ItemRequestDto getRequest(@PathVariable Long requestId,
-                                     @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                     @RequestHeader(USER_ID_HEADER) Long userId) {
         ItemRequest request = requests.get(requestId);
         if (request == null) {
             throw new RuntimeException("Request not found");

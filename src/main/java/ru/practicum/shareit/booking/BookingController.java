@@ -10,21 +10,21 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ru.practicum.shareit.booking.BookingConstants.*;
-
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
+    public static final String USER_ID_HEADER = "X-Sharer-User-Id";
+
     private final Map<Long, Booking> bookings = new HashMap<>();
     private long idCounter = 1;
 
     @PostMapping
     public BookingDto createBooking(@RequestBody BookingRequestDto bookingRequestDto,
-                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                    @RequestHeader(USER_ID_HEADER) Long userId) {
         Booking booking = BookingMapper.toBooking(bookingRequestDto, userId);
         booking.setId(idCounter++);
-        booking.setStatus(BOOKING_STATUS_WAITING); // Используем константу
+        booking.setStatus(BookingStatus.WAITING);
         bookings.put(booking.getId(), booking);
 
         return BookingMapper.toBookingDto(booking);
@@ -33,19 +33,19 @@ public class BookingController {
     @PatchMapping("/{bookingId}")
     public BookingDto approveBooking(@PathVariable Long bookingId,
                                      @RequestParam boolean approved,
-                                     @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+                                     @RequestHeader(USER_ID_HEADER) Long ownerId) {
         Booking booking = bookings.get(bookingId);
         if (booking == null) {
             throw new RuntimeException("Booking not found");
         }
-        booking.setStatus(approved ? BOOKING_STATUS_APPROVED : BOOKING_STATUS_REJECTED);
+        booking.setStatus(approved ? BookingStatus.APPROVED : BookingStatus.REJECTED);
 
         return BookingMapper.toBookingDto(booking);
     }
 
     @GetMapping("/{bookingId}")
     public BookingDto getBooking(@PathVariable Long bookingId,
-                                 @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                 @RequestHeader(USER_ID_HEADER) Long userId) {
         Booking booking = bookings.get(bookingId);
         if (booking == null) {
             throw new RuntimeException("Booking not found");
@@ -54,8 +54,8 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingDto> getUserBookings(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                            @RequestParam(defaultValue = DEFAULT_BOOKING_STATE) String state) {
+    public List<BookingDto> getUserBookings(@RequestHeader(USER_ID_HEADER) Long userId,
+                                            @RequestParam(defaultValue = "ALL") BookingState state) {
         return bookings.values().stream()
                 .filter(booking -> booking.getBookerId().equals(userId))
                 .map(BookingMapper::toBookingDto)
@@ -63,8 +63,8 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<BookingDto> getOwnerBookings(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                             @RequestParam(defaultValue = DEFAULT_BOOKING_STATE) String state) {
+    public List<BookingDto> getOwnerBookings(@RequestHeader(USER_ID_HEADER) Long ownerId,
+                                             @RequestParam(defaultValue = "ALL") BookingState state) {
         return bookings.values().stream()
                 .map(BookingMapper::toBookingDto)
                 .toList();

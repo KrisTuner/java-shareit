@@ -1,10 +1,9 @@
 package ru.practicum.shareit.booking.mapper;
 
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
-
-import static ru.practicum.shareit.booking.BookingConstants.BOOKING_STATUS_WAITING;
 
 public class BookingMapper {
 
@@ -15,7 +14,7 @@ public class BookingMapper {
                 booking.getEnd(),
                 booking.getItemId(),
                 booking.getBookerId(),
-                booking.getStatus()
+                booking.getStatus().name()
         );
     }
 
@@ -26,7 +25,7 @@ public class BookingMapper {
                 bookingRequestDto.getEnd(),
                 bookingRequestDto.getItemId(),
                 bookerId,
-                BOOKING_STATUS_WAITING
+                BookingStatus.WAITING
         );
     }
 }
