@@ -17,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final ItemServiceImpl itemServiceImpl;
 
     @PostMapping
     public ItemDto createItem(@Valid @RequestBody ItemDto itemDto,
@@ -35,7 +34,7 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ItemWithBookingsDto getItem(@PathVariable Long itemId,
                                        @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemServiceImpl.getItemWithBookingsAndComments(itemId, userId);
+        return ((ItemServiceImpl) itemService).getItemWithBookingsAndComments(itemId, userId);
     }
 
     @GetMapping
@@ -52,6 +51,6 @@ public class ItemController {
     public CommentDto addComment(@PathVariable Long itemId,
                                  @Valid @RequestBody CommentCreateDto commentCreateDto,
                                  @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemServiceImpl.addComment(itemId, commentCreateDto, userId);
+        return ((ItemServiceImpl) itemService).addComment(itemId, commentCreateDto, userId);
     }
 }
