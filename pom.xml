@@ -79,19 +79,18 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
-						<id>pre-integration-test</id>
-						<phase>pre-integration-test</phase>
 						<goals>
-							<goal>start</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>post-integration-test</id>
-						<phase>post-integration-test</phase>
-						<goals>
-							<goal>stop</goal>
+							<goal>repackage</goal>
 						</goals>
 					</execution>
 				</executions>
