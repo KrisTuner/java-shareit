@@ -1,28 +1,8 @@
+name: ShareIt API Tests
+
+on:
+  pull_request:
+
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: 21
-          distribution: temurin
-
-      - name: Build project
-        run: mvn -B package -DskipTests
-
-      - name: Start ShareIt app
-        run: nohup java -jar target/shareit-0.0.1-SNAPSHOT.jar > log.txt 2>&1 &
-
-      - name: Wait for app to start
-        run: |
-          echo "Waiting for server..."
-          for i in {1..30}; do
-            nc -z localhost 8080 && echo "Server is up!" && exit 0
-            sleep 2
-          done
-          echo "Server did not start" && exit 1
-
-      - name: Run API tests
-        uses: yandex-praktikum/java-shareit/.github/workflows/api-tests.yml@ci
+    uses: yandex-praktikum/java-shareit/.github/workflows/api-tests.yml@ci
