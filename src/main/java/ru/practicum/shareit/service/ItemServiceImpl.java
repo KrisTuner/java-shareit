@@ -17,6 +17,7 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.ItemRepository;
 import ru.practicum.shareit.item.model.CommentRepository;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
@@ -32,10 +33,16 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
         userService.getUser(ownerId);
+
+        if (itemDto.getRequestId() != null) {
+            itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new RuntimeException("Request not found with id: " + itemDto.getRequestId()));
+        }
 
         Item item = ItemMapper.toItem(itemDto, ownerId);
         Item savedItem = itemRepository.save(item);
@@ -59,6 +66,12 @@ public class ItemServiceImpl implements ItemService {
         }
         if (itemDto.getAvailable() != null) {
             existingItem.setAvailable(itemDto.getAvailable());
+        }
+
+        if (itemDto.getRequestId() != null) {
+            itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new RuntimeException("Request not found with id: " + itemDto.getRequestId()));
+            existingItem.setRequestId(itemDto.getRequestId());
         }
 
         Item updatedItem = itemRepository.save(existingItem);
@@ -124,6 +137,7 @@ public class ItemServiceImpl implements ItemService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public CommentDto addComment(Long itemId, CommentCreateDto commentCreateDto, Long userId) {
         userService.getUser(userId);
         Item item = itemRepository.findById(itemId)
@@ -146,6 +160,7 @@ public class ItemServiceImpl implements ItemService {
         return CommentMapper.toCommentDto(savedComment, author);
     }
 
+    @Override
     public ItemWithBookingsDto getItemWithBookingsAndComments(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new RuntimeException("Item not found"));
@@ -179,6 +194,14 @@ public class ItemServiceImpl implements ItemService {
         }
 
         return itemWithBookings;
+    }
+
+    @Override
+    public List<ItemDto> getItemsByRequest(Long requestId) {
+        List<Item> items = itemRepository.findByRequestId(requestId);
+        return items.stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
     private Map<Long, List<CommentDto>> getCommentsByItemIds(List<Long> itemIds) {

@@ -8,7 +8,6 @@ import ru.practicum.shareit.item.dto.ItemWithBookingsDto;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import ru.practicum.shareit.service.ItemService;
-import ru.practicum.shareit.service.ItemServiceImpl;
 
 import java.util.List;
 
@@ -17,7 +16,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final ItemServiceImpl itemServiceImpl;
 
     @PostMapping
     public ItemDto createItem(@Valid @RequestBody ItemDto itemDto,
@@ -35,7 +33,7 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ItemWithBookingsDto getItem(@PathVariable Long itemId,
                                        @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemServiceImpl.getItemWithBookingsAndComments(itemId, userId);
+        return itemService.getItemWithBookingsAndComments(itemId, userId);
     }
 
     @GetMapping
@@ -52,6 +50,11 @@ public class ItemController {
     public CommentDto addComment(@PathVariable Long itemId,
                                  @Valid @RequestBody CommentCreateDto commentCreateDto,
                                  @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemServiceImpl.addComment(itemId, commentCreateDto, userId);
+        return itemService.addComment(itemId, commentCreateDto, userId);
+    }
+
+    @GetMapping("/request/{requestId}")
+    public List<ItemDto> getItemsByRequest(@PathVariable Long requestId) {
+        return itemService.getItemsByRequest(requestId);
     }
 }
