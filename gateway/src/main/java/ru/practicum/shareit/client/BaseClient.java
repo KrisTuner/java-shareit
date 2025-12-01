@@ -11,12 +11,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public class BaseClient {
     protected final RestTemplate rest;
+    protected final ObjectMapper objectMapper;
 
     public BaseClient(RestTemplate rest) {
         this.rest = rest;
+        this.objectMapper = createObjectMapper();
     }
 
     protected ResponseEntity<Object> get(String path) {
@@ -117,5 +121,11 @@ public class BaseClient {
         }
 
         return responseBuilder.build();
+    }
+
+    private ObjectMapper createObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        return mapper;
     }
 }
