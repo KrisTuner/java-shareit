@@ -27,21 +27,23 @@ import ru.practicum.shareit.request.dto.ItemRequestCreateDto;
 public class ItemRequestController {
     private final ItemRequestClient itemRequestClient;
 
+    public static final String USER_ID_HEADER = "X-Sharer-User-Id";
+
     @PostMapping
     public ResponseEntity<Object> createItemRequest(@Valid @RequestBody ItemRequestCreateDto itemRequestCreateDto,
-                                                    @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                                    @RequestHeader(USER_ID_HEADER) Long userId) {
         log.info("Creating item request, userId={}", userId);
         return itemRequestClient.createItemRequest(userId, itemRequestCreateDto);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getUserRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public ResponseEntity<Object> getUserRequests(@RequestHeader(USER_ID_HEADER) Long userId) {
         log.info("Get user requests, userId={}", userId);
         return itemRequestClient.getUserRequests(userId);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ResponseEntity<Object> getAllRequests(@RequestHeader(USER_ID_HEADER) Long userId,
                                                  @PositiveOrZero @RequestParam(defaultValue = "0") int from,
                                                  @Positive @RequestParam(defaultValue = "10") int size) {
         log.info("Get all requests, userId={}, from={}, size={}", userId, from, size);
@@ -50,7 +52,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getRequest(@PathVariable Long requestId,
-                                             @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                             @RequestHeader(USER_ID_HEADER) Long userId) {
         log.info("Get request, requestId={}, userId={}", requestId, userId);
         return itemRequestClient.getRequestById(userId, requestId);
     }

@@ -27,9 +27,11 @@ import ru.practicum.shareit.item.dto.ItemDto;
 public class ItemController {
     private final ItemClient itemClient;
 
+    public static final String USER_ID_HEADER = "X-Sharer-User-Id";
+
     @PostMapping
     public ResponseEntity<Object> createItem(@Valid @RequestBody ItemDto itemDto,
-                                             @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+                                             @RequestHeader(USER_ID_HEADER) Long ownerId) {
         log.info("Creating item {}, ownerId={}", itemDto, ownerId);
         return itemClient.createItem(ownerId, itemDto);
     }
@@ -37,20 +39,20 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateItem(@PathVariable Long itemId,
                                              @RequestBody ItemDto itemDto,
-                                             @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+                                             @RequestHeader(USER_ID_HEADER) Long ownerId) {
         log.info("Updating item {}, itemId={}, ownerId={}", itemDto, itemId, ownerId);
         return itemClient.updateItem(ownerId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> getItem(@PathVariable Long itemId,
-                                          @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                          @RequestHeader(USER_ID_HEADER) Long userId) {
         log.info("Get item, itemId={}, userId={}", itemId, userId);
         return itemClient.getItem(userId, itemId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getUserItems(@RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public ResponseEntity<Object> getUserItems(@RequestHeader(USER_ID_HEADER) Long ownerId) {
         log.info("Get user items, ownerId={}", ownerId);
         return itemClient.getUserItems(ownerId);
     }
@@ -64,7 +66,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> addComment(@PathVariable Long itemId,
                                              @Valid @RequestBody CommentCreateDto commentCreateDto,
-                                             @RequestHeader("X-Sharer-User-Id") Long userId) {
+                                             @RequestHeader(USER_ID_HEADER) Long userId) {
         log.info("Adding comment, itemId={}, userId={}", itemId, userId);
         return itemClient.addComment(userId, itemId, commentCreateDto);
     }
